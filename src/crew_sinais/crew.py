@@ -1,55 +1,94 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
-
-# Uncomment the following line to use an example of a custom tool
-# from crew_sinais.tools.custom_tool import MyCustomTool
-
-# Check our tools documentations for more information on how to use them
-# from crewai_tools import SerperDevTool
+from crewai_tools import EXASearchTool
 
 @CrewBase
-class CrewSinaisCrew():
-	"""CrewSinais crew"""
+class InsightsCrewCrew():
+	"""InsightsCrew crew"""
 	agents_config = 'config/agents.yaml'
 	tasks_config = 'config/tasks.yaml'
 
 	@agent
-	def researcher(self) -> Agent:
+	def business_researcher(self) -> Agent:
 		return Agent(
-			config=self.agents_config['researcher'],
-			# tools=[MyCustomTool()], # Example of custom tool, loaded on the beginning of file
+			config=self.agents_config['business_researcher'],
+			tools=[EXASearchTool()],
 			verbose=True
 		)
 
 	@agent
-	def reporting_analyst(self) -> Agent:
+	def tech_researcher(self) -> Agent:
 		return Agent(
-			config=self.agents_config['reporting_analyst'],
+			config=self.agents_config['tech_researcher'],
+   			tools=[EXASearchTool()],
+			verbose=True
+		)
+
+	@agent
+	def management_researcher(self) -> Agent:
+		return Agent(
+			config=self.agents_config['management_researcher'],
+			tools=[EXASearchTool()],
+			verbose=True
+		)
+
+	@agent
+	def knowledge_graph_engineer(self) -> Agent:
+		return Agent(
+			config=self.agents_config['knowledge_graph_engineer'],
+			verbose=True
+		)
+
+	@agent
+	def research_insights(self) -> Agent:
+		return Agent(
+			config=self.agents_config['research_insights'],
 			verbose=True
 		)
 
 	@task
-	def research_task(self) -> Task:
+	def business_task(self) -> Task:
 		return Task(
-			config=self.tasks_config['research_task'],
-			agent=self.researcher()
+			config=self.tasks_config['business_task'],
+			agent=self.business_researcher()
 		)
 
 	@task
-	def reporting_task(self) -> Task:
+	def tech_task(self) -> Task:
 		return Task(
-			config=self.tasks_config['reporting_task'],
-			agent=self.reporting_analyst(),
+			config=self.tasks_config['tech_task'],
+			agent=self.tech_researcher(),
+		)
+
+	@task
+	def management_task(self) -> Task:
+		return Task(
+			config=self.tasks_config['management_task'],
+			agent=self.management_researcher()
+		)
+
+	@task
+	def kg_task(self) -> Task:
+		return Task(
+			config=self.tasks_config['kg_task'],
+			agent=self.knowledge_graph_engineer(),
+			output_file='graph.md'
+		)
+
+	@task
+	def report_task(self) -> Task:
+		return Task(
+			config=self.tasks_config['report_task'],
+			agent=self.research_insights(),
 			output_file='report.md'
 		)
 
 	@crew
 	def crew(self) -> Crew:
-		"""Creates the CrewSinais crew"""
+		"""Creates the InsightsCrew crew"""
 		return Crew(
-			agents=self.agents, # Automatically created by the @agent decorator
-			tasks=self.tasks, # Automatically created by the @task decorator
+			agents=self.agents,
+			tasks=self.tasks,
 			process=Process.sequential,
 			verbose=2,
-			# process=Process.hierarchical, # In case you wanna use that instead https://docs.crewai.com/how-to/Hierarchical/
 		)

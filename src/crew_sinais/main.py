@@ -1,23 +1,27 @@
 #!/usr/bin/env python
 import sys
-from crew_sinais.crew import CrewSinaisCrew
+from crew_sinais.crew import InsightsCrewCrew
+from datetime import datetime
 
 
 def run():
-    # Replace with your inputs, it will automatically interpolate any tasks and agents information
     inputs = {
-        'topic': 'AI LLMs'
+        'context': 'Car insurance',
+        'current_year': datetime.now().year
     }
-    CrewSinaisCrew().crew().kickoff(inputs=inputs)
+    InsightsCrewCrew().crew().kickoff(inputs=inputs)
 
 
 def train():
     """
     Train the crew for a given number of iterations.
     """
-    inputs = {"topic": "AI LLMs"}
+    inputs = {
+        'context': 'Car insurance',
+        'current_year': datetime.now().year
+    }
     try:
-        CrewSinaisCrew().crew().train(n_iterations=int(sys.argv[1]), inputs=inputs)
+        InsightsCrewCrew().crew().train(n_iterations=int(sys.argv[1]), inputs=inputs)
 
     except Exception as e:
         raise Exception(f"An error occurred while training the crew: {e}")
